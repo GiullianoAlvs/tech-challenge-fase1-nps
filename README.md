@@ -73,6 +73,7 @@ tech-challenge-fase1-nps/
 │   ├── 03_eda_atendimento_perfil.ipynb   # P4 – atendimento, reclamações, perfil
 │   └── 04_modelo_preditivo.ipynb         # todos – modelo e avaliação (opcional)
 ├── models/                               # modelos treinados (.joblib)
+│   └── modelo_nps_ridge.joblib           # gerado pelo notebook 04
 ├── reports/
 │   └── figures/                          # gráficos exportados para os slides
 ├── requirements.txt
@@ -196,6 +197,24 @@ O projeto segue o **CRISP-DM**:
 | 5. Modelagem *(opcional)* | Escolha da target (regressão ou classificação), seleção de variáveis, divisão treino/teste e treino | `04_modelo_preditivo.ipynb` | Todos |
 | 6. Avaliação e uso | Métricas, escolha final e como a empresa usaria o modelo no dia a dia | `04_modelo_preditivo.ipynb` + slides e vídeo | Todos e P5 |
 
+### 8.1 Modelo preditivo: resumo
+
+Detalhes, código e justificativas no notebook `04_modelo_preditivo.ipynb`.
+
+| Item | Decisão |
+|---|---|
+| Pergunta | Considerando o que já aconteceu com o pedido, qual nota de NPS o cliente deve dar e quem precisa de ação antes da pesquisa? |
+| Target | `nps_score` como **regressão** (0 a 10). Com 84% de detratores, um classificador binário pouco ajudaria a priorizar, e a nota prevista mostra a gravidade e pode ser convertida em qualquer categoria depois |
+| Variáveis de entrada | 12 numéricas (cliente, pedido, logística e atendimento) + região. Ficam fora identificadores, vazamento (premissa 7.3), derivadas da target e `complaints_count` (pendente; testada à parte, ganho de só 0,05 no MAE) |
+| Preparação | `Pipeline` do scikit-learn: padronização das numéricas e *one-hot* da região |
+| Separação | 80% treino / 20% teste, estratificada por `nps_category`, `random_state=42`. Comparação de modelos por validação cruzada de 5 dobras no treino |
+| Modelos comparados | Baseline (média), Ridge, Random Forest e Gradient Boosting |
+| Modelo escolhido | **Ridge**: melhor MAE na validação cruzada e coeficientes explicáveis em linguagem de negócio |
+| Resultado no teste | MAE 1,44 (baseline 2,11, erro 32% menor) · R² 0,48 · AUC 0,85 para identificar detratores |
+| Fatores que mais pesam | Dias de atraso (~ −1 ponto por dia), contatos com o atendimento (~ −0,8 por contato) e tempo de resolução (~ −0,15 por dia). Perfil do cliente e do pedido têm efeito próximo de zero |
+| Uso no negócio | Pontuação diária dos pedidos ainda sem pesquisa, em faixas de risco (Crítico < 3, Alto 3–5, Moderado 5–7, Baixo ≥ 7) que viram fila de contato proativo. No teste, 100% dos clientes da faixa Crítico foram detratores |
+| Artefatos | `models/modelo_nps_ridge.joblib` · `reports/figures/modelo_*.png` |
+
 ## 9. Como reproduzir
 
 **Pré-requisitos:** Python 3.11 ou superior e Git.
@@ -258,7 +277,7 @@ Entrega final: **terça, 03/11/2026**.
 - [ ] Link do repositório público no GitHub
 - [x] Tratamento e preparação da base
 - [ ] Análise exploratória (EDA)
-- [ ] Modelo preditivo e pipeline (opcional)
+- [x] Modelo preditivo e pipeline (opcional)
 - [ ] Código organizado, com nomes claros e comentários
 - [x] Estrutura de pastas (`data/`, `notebooks/`, `models/`, `reports/`)
 - [ ] README com objetivo, base, metodologia e reprodução
