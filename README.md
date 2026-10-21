@@ -2,7 +2,7 @@
 
 > Como antecipar a insatisfação do cliente de um e-commerce **antes** da pesquisa de NPS, usando dados operacionais de pedido, logística e atendimento.
 
-Projeto desenvolvido para o Tech Challenge da Fase 1 da Pós-Tech. O repositório reúne a base preparada, a análise exploratória de logística e a estrutura para as demais análises e o modelo preditivo opcional.
+Projeto desenvolvido para o Tech Challenge da Fase 1 da Pós-Tech. O repositório reúne a base preparada, as análises exploratórias de logística, atendimento e perfil, além da estrutura para o modelo preditivo opcional.
 
 ---
 
@@ -44,7 +44,7 @@ O projeto responde a duas perguntas:
 |---|---|---|
 | Repositório público (tratamento e análises) | Em andamento | este repositório |
 | EDA de logística | Concluída | [notebook 02](notebooks/02_eda_logistica.ipynb) · [síntese](reports/analise_logistica.md) |
-| EDA de atendimento e perfil | PR aberto; ainda não integrada à branch principal | [PR #2](https://github.com/GiullianoAlvs/tech-challenge-fase1-nps/pull/2) |
+| EDA de atendimento e perfil | Concluída e integrada | [notebook 03](notebooks/03_eda_atendimento_perfil.ipynb) |
 | Modelo preditivo (opcional) | Ainda não integrado à branch principal | [notebook 04](notebooks/04_modelo_preditivo.ipynb) |
 | Apresentação (storytelling para público não técnico) | A fazer | — |
 | Vídeo executivo (até 5 minutos) | A fazer | — |
@@ -275,7 +275,7 @@ Entrega final: **terça, 03/11/2026**.
 - [x] Link do repositório público no GitHub
 - [x] Tratamento e preparação da base
 - [x] EDA de logística executada sobre a base tratada
-- [ ] EDA de atendimento e perfil integrada à branch principal
+- [x] EDA de atendimento e perfil integrada à branch principal
 - [ ] Modelo preditivo e pipeline (opcional)
 - [ ] Código organizado, com nomes claros e comentários
 - [x] Estrutura de pastas (`data/`, `notebooks/`, `models/`, `reports/`)
