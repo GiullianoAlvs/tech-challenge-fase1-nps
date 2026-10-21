@@ -2,7 +2,7 @@
 
 > Como antecipar a insatisfação do cliente de um e-commerce **antes** da pesquisa de NPS, usando dados operacionais de pedido, logística e atendimento.
 
-Projeto desenvolvido para o Tech Challenge da Fase 1 da Pós-Tech. O repositório reúne o tratamento da base, a análise exploratória (EDA) e o modelo preditivo (opcional) com seu pipeline.
+Projeto desenvolvido para o Tech Challenge da Fase 1 da Pós-Tech. O repositório reúne a base preparada, a análise exploratória de logística e a estrutura para as demais análises e o modelo preditivo opcional.
 
 ---
 
@@ -42,19 +42,16 @@ O projeto responde a duas perguntas:
 
 | Entregável | Status | Link |
 |---|---|---|
-| Repositório público (tratamento, EDA e modelo) | Em andamento | este repositório |
-| Apresentação (storytelling para público não técnico) | A fazer | _adicionar link_ |
-| Vídeo executivo (até 5 minutos) | A fazer | _adicionar link_ |
+| Repositório público (tratamento e análises) | Em andamento | este repositório |
+| EDA de logística | Concluída | [notebook 02](notebooks/02_eda_logistica.ipynb) · [síntese](reports/analise_logistica.md) |
+| EDA de atendimento e perfil | PR aberto; ainda não integrada à branch principal | [PR #2](https://github.com/GiullianoAlvs/tech-challenge-fase1-nps/pull/2) |
+| Modelo preditivo (opcional) | Ainda não integrado à branch principal | [notebook 04](notebooks/04_modelo_preditivo.ipynb) |
+| Apresentação (storytelling para público não técnico) | A fazer | — |
+| Vídeo executivo (até 5 minutos) | A fazer | — |
 
 ## 4. Equipe
 
-| Papel | Responsabilidades | Nome | GitHub |
-|---|---|---|---|
-| P1 – Negócio & Target | Problema de negócio, importância do NPS, definição da target e riscos de uso | _preencher_ | _@usuario_ |
-| P2 – Dados & Repositório | Repositório, tratamento da base, README, padronização do código e pipeline do modelo | _preencher_ | [@GiullianoAlvs](https://github.com/GiullianoAlvs) |
-| P3 – EDA Logística | NPS x prazo, atraso, tentativas de entrega e frete; ponto de ruptura | _preencher_ | _@usuario_ |
-| P4 – EDA Atendimento & Perfil | NPS x contatos, tempo de resolução e reclamações; perfil do cliente e do pedido | _preencher_ | _@usuario_ |
-| P5 – Storytelling | Slides, roteiro e gravação do vídeo | _preencher_ | _@usuario_ |
+Gabriel Balbine de Andrades, Gerferson André Silva Costa, Giulliano Alves Souza Machado, Matheus da Silva Lima e Yan Marcel Ramos. As frentes do projeto abrangem negócio e variável-alvo, preparação dos dados, EDA de logística, EDA de atendimento e perfil, e apresentação dos resultados.
 
 O modelo preditivo é construído pelo grupo inteiro em sessões conjuntas.
 
@@ -74,8 +71,14 @@ tech-challenge-fase1-nps/
 │   └── 04_modelo_preditivo.ipynb         # todos – modelo e avaliação (opcional)
 ├── models/                               # modelos treinados (.joblib)
 ├── reports/
+│   ├── analise_logistica.md              # resultados e limitações da EDA de logística
 │   └── figures/                          # gráficos exportados para os slides
+├── scripts/
+│   └── verificar_eda_logistica.py        # reproduz a base e o notebook 02
+├── .github/workflows/ci.yml             # verificação em push e pull request
 ├── requirements.txt
+├── requirements-dev.txt
+├── .pre-commit-config.yaml              # verificações antes de cada commit
 ├── .gitignore
 └── README.md
 ```
@@ -230,6 +233,20 @@ O projeto segue o **CRISP-DM**:
 
    O notebook `01` gera `data/processed/nps_tratado.csv`, que é usado pelos notebooks seguintes.
 
+   Para reproduzir a base e verificar a execução do notebook de logística e suas figuras:
+
+   ```bash
+   python scripts/verificar_eda_logistica.py
+   ```
+
+   Para instalar as verificações locais de formatação e integridade dos arquivos:
+
+   ```bash
+   python -m pip install -r requirements-dev.txt
+   pre-commit install
+   pre-commit run --all-files
+   ```
+
 ## 10. Padrões do projeto
 
 - **Notebooks** numerados na ordem de execução: `NN_descricao.ipynb`.
@@ -255,12 +272,13 @@ Entrega final: **terça, 03/11/2026**.
 
 ## 12. Checklist da entrega
 
-- [ ] Link do repositório público no GitHub
+- [x] Link do repositório público no GitHub
 - [x] Tratamento e preparação da base
-- [ ] Análise exploratória (EDA)
+- [x] EDA de logística executada sobre a base tratada
+- [ ] EDA de atendimento e perfil integrada à branch principal
 - [ ] Modelo preditivo e pipeline (opcional)
 - [ ] Código organizado, com nomes claros e comentários
 - [x] Estrutura de pastas (`data/`, `notebooks/`, `models/`, `reports/`)
-- [ ] README com objetivo, base, metodologia e reprodução
+- [x] README com objetivo, base, metodologia e reprodução
 - [ ] Slides de storytelling para público não técnico
 - [ ] Vídeo executivo de até 5 minutos, com pelo menos um integrante apresentando

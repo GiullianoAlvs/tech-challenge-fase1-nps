@@ -1,0 +1,21 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+        files: ^(README\.md|reports/.*\.md|scripts/.*\.py|\.github/.*\.yml|requirements.*\.txt)$
+      - id: trailing-whitespace
+        files: ^(README\.md|reports/.*\.md|scripts/.*\.py|\.github/.*\.yml|requirements.*\.txt)$
+  - repo: https://github.com/psf/black
+    rev: 26.10.0
+    hooks:
+      - id: black
+        files: ^scripts/.*\.py$
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        files: ^scripts/.*\.py$
+        args: [--max-line-length=88]
