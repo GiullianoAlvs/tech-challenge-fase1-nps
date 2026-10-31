@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NPS Preditivo · Apresentação gerencial</title>
+<style>
+:root{
+  --navy:#2b3990; --navy2:#1f2a6e; --orange:#f5a81c; --orange-ink:#b07400; --bg:#e9ebf0; --card:#ffffff; --line:#dde1e8;
+  --ink:#1b1f2a; --ink2:#4a5163; --muted:#8a90a0; --soft:#f4f5f8; --navy-soft:#b9c0d6;
+  --good:#1a7f37; --warn:#b26a00; --bad:#c62828; --goodbg:#e6f4ea; --warnbg:#fff3df; --badbg:#fdecec;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);font-family:Arial,"Segoe UI",system-ui,sans-serif;color:var(--ink)}
+#viewport{position:fixed;inset:0 0 52px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.slide{width:1600px;height:900px;background:var(--card);box-shadow:0 6px 28px rgba(20,30,70,.18);position:absolute;transform-origin:center center;display:none;overflow:hidden}
+.slide.on{display:flex;flex-direction:column}
+/* cabeçalho, corpo e rodapé */
+.bar-top{position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,var(--navy) 0 82%,var(--orange) 82% 100%)}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;padding:30px 56px 0}
+.eyebrow{font:700 15px Arial;color:var(--orange-ink);text-transform:uppercase;letter-spacing:1.6px}
+.ttl{font:700 38px Arial;color:var(--navy);margin-top:6px;line-height:1.1}
+.sub{font:18px/1.4 Arial;color:var(--ink2);margin-top:8px;max-width:1240px}
+.tag{font:700 12px Arial;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;border:1px solid var(--line);border-radius:20px;padding:6px 12px;white-space:nowrap}
+.bd{flex:1;display:flex;flex-direction:column;padding:22px 56px 64px}
+.ft{position:absolute;left:56px;right:56px;bottom:14px;display:flex;justify-content:space-between;gap:24px;font:12px/1.35 Arial;color:var(--muted);border-top:1px solid var(--line);padding-top:7px}
+.ft .pg{font-weight:700;color:var(--ink2);white-space:nowrap}
+/* grades */
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.g5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.mt{margin-top:14px}
+/* cartões de número */
+.kc{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 16px 12px}
+.kc .l{font:700 13px Arial;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px}
+.kc .v{font:700 34px Arial;color:var(--navy);margin-top:4px;line-height:1.1}
+.kc .v.bad{color:var(--bad)}
+.kc .d{font:14px/1.4 Arial;color:var(--ink2);margin-top:4px}
+/* caixas e leitura rápida */
+.box{border:1px solid var(--line);border-radius:12px;padding:12px 16px 10px;background:#fff;min-width:0}
+.box h3{margin:0;font:700 18px Arial;color:var(--navy)}
+.box .d{font:14px Arial;color:var(--ink2);margin-top:3px}
+.box svg{display:block;margin:10px auto 0}
+.box ul{margin:8px 0 0;padding-left:20px}
+.box li{font:16px/1.45 Arial;color:var(--ink2);margin:4px 0}
+.box li b{color:var(--ink)}
+.read{background:#f7f8fc;border-left:4px solid var(--orange);border-radius:6px;padding:10px 16px 9px}
+.read h3{margin:0 0 4px;font:700 13px Arial;color:var(--navy);text-transform:uppercase;letter-spacing:.6px}
+.read ul{margin:0;padding-left:18px}
+.read li{font:16px/1.45 Arial;color:var(--ink2);margin:3px 0}
+.read li b{color:var(--ink)}
+.read p{margin:0;font:16px/1.45 Arial;color:var(--ink2)}
+.nota{font:13px/1.4 Arial;color:var(--muted);margin-top:8px}
+/* tabelas */
+table{border-collapse:collapse;width:100%}
+th{font:700 12px Arial;color:var(--ink2);text-transform:uppercase;letter-spacing:.3px;text-align:right;padding:6px 6px;border-bottom:2px solid var(--navy);white-space:nowrap}
+td{font:15px Arial;padding:7px 6px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th.l,td.l{text-align:left}
+tr.tot td{font-weight:700;background:var(--soft)}
+table.txt td{white-space:normal;vertical-align:top;font-size:14.5px;line-height:1.4}
+/* selos: sempre ícone + texto, nunca só cor */
+.pill{display:inline-block;font:700 13px Arial;padding:3px 9px;border-radius:12px;white-space:nowrap}
+.p-g{background:var(--goodbg);color:var(--good)} .p-w{background:var(--warnbg);color:var(--warn)} .p-b{background:var(--badbg);color:var(--bad)} .p-n{background:var(--soft);color:var(--ink2)}
+/* jornada e cartões lado a lado */
+.flow{display:flex;align-items:stretch;gap:10px}
+.flow .st{flex:1;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.flow .st.hl{background:var(--navy);border-color:var(--navy);color:#fff}
+.flow .ar{align-self:center;font:700 26px Arial;color:var(--navy-soft)}
+.flow .n{display:inline-block;width:30px;height:30px;border-radius:50%;background:var(--orange);color:var(--ink);font:700 15px/30px Arial;text-align:center}
+.flow h4{margin:10px 0 4px;font:700 21px Arial;color:var(--navy)}
+.flow .st.hl h4{color:#fff}
+.flow .big{font:700 32px Arial;color:var(--navy);margin:4px 0 2px}
+.flow .st.hl .big{color:var(--orange)}
+.flow p{margin:0;font:15.5px/1.45 Arial;color:var(--ink2)}
+.flow .st.hl p{color:#d6dbf5}
+/* pergunta em destaque */
+.quote{background:var(--navy);border-radius:12px;padding:26px 34px;color:#fff;font:700 30px/1.35 Arial}
+.quote span{color:var(--orange)}
+/* barra empilhada */
+.stack{display:flex;height:46px;border-radius:8px;overflow:hidden;gap:2px;margin-top:12px}
+.stack div{display:flex;align-items:center;justify-content:center;font:700 16px Arial}
+.leg{font:14px Arial;color:var(--ink2);margin-top:8px}
+.leg span{margin-right:20px;white-space:nowrap}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+/* slides com pouco conteúdo: letra e cartões maiores, conteúdo centralizado na vertical */
+.roomy .bd{justify-content:center;padding-top:10px}
+.roomy .mt{margin-top:24px}
+.roomy .flow .st{padding:24px 26px;min-height:220px}
+.roomy .flow .n{width:38px;height:38px;font-size:18px;line-height:38px}
+.roomy .flow h4{font-size:28px;margin:14px 0 8px}
+.roomy .flow .big{font-size:44px;margin:6px 0}
+.roomy .flow p{font-size:20px}
+.roomy .flow .ar{font-size:34px}
+.roomy .read{padding:16px 22px 14px}
+.roomy .read h3{font-size:15px;margin-bottom:8px}
+.roomy .read li,.roomy .read p{font-size:20px;line-height:1.5}
+.roomy .box{padding:20px 24px 18px}
+.roomy .box h3{font-size:24px}
+.roomy .box li{font-size:20px;line-height:1.5}
+.roomy .kc{padding:18px 22px}
+.roomy .kc .l{font-size:15px}
+.roomy .kc .v{font-size:44px}
+.roomy .kc .d{font-size:18px}
+.roomy .pill{font-size:15px}
+.roomy .quote{font-size:38px;padding:36px 44px}
+.roomy .nota{font-size:16px}
+.roomy table.txt td{font-size:18px;padding:12px 8px}
+.roomy th{font-size:14px}
+/* capa e encerramento */
+.cover{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 70%);color:#fff}
+.cover .mark{position:absolute;right:90px;top:70px;border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:12px 18px;font:700 14px Arial;letter-spacing:1.4px;text-transform:uppercase;color:#d6dbf5}
+.cover .in{position:absolute;left:110px;top:200px;right:110px}
+.cover .ey{font:700 18px Arial;color:var(--orange);letter-spacing:2px;text-transform:uppercase}
+.cover h1{font:700 76px Arial;margin:18px 0 14px;line-height:1.05}
+.cover p{font:22px/1.45 Arial;color:#d6dbf5;margin:0}
+.cover .time{position:absolute;left:110px;right:110px;bottom:200px;font:16px/1.5 Arial;color:#c7cdf0}
+.cover .time b{color:#fff}
+.cover .agenda{position:absolute;left:110px;bottom:96px;display:flex;gap:44px;font:16px Arial;color:#c7cdf0}
+.cover .agenda b{display:block;color:#fff;font-size:20px;margin-bottom:4px}
+.cover .msgs{position:absolute;left:110px;right:110px;top:330px;display:flex;flex-direction:column;gap:26px}
+.cover .msgs div{display:flex;gap:26px;align-items:baseline;font:700 34px/1.3 Arial;color:#fff}
+.cover .msgs b{font-size:46px;color:var(--orange);min-width:44px}
+/* navegação */
+#nav{position:fixed;left:0;right:0;bottom:0;height:52px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 16px;font:14px Arial}
+#nav button{font:700 14px Arial;border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:8px;padding:7px 14px;cursor:pointer}
+#nav button:hover{background:var(--soft)}
+#nav select{font:14px Arial;padding:6px 8px;border:1px solid var(--line);border-radius:8px;max-width:520px}
+#pg{color:var(--ink2);min-width:80px;text-align:center}
+.sp{flex:1}
+.hint{color:var(--muted);font-size:12px}
+@media print{
+  @page{size:1600px 900px;margin:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{background:#fff}
+  #nav{display:none}
+  #viewport{position:static;display:block}
+  .slide{display:flex !important;flex-direction:column;position:relative;transform:none !important;box-shadow:none;page-break-after:always;break-after:page}
+}
+</style>
+</head>
+<body>
+<div id="viewport">
+
+<!-- 1. Capa -->
+<div class="slide cover" data-sec="Abertura" data-tit="Capa">
+  <div class="mark">Pós-Tech · AI Scientist</div>
+  <div class="in">
+    <div class="ey">Tech Challenge · Fase 1</div>
+    <h1>NPS Preditivo</h1>
+    <p>Como antecipar a insatisfação do cliente antes da pesquisa de NPS<br>Apresentação gerencial dos resultados · outubro de 2026</p>
+  </div>
+  <div class="time"><b>Equipe:</b> Gabriel Balbine de Andrades · Gerferson André Silva Costa · Giulliano Alves Souza Machado · Matheus da Silva Lima · Yan Marcel Ramos</div>
+  <div class="agenda">
+    <div><b>1 · Contexto</b>problema e pergunta</div>
+    <div><b>2 · Diagnóstico</b>ponto de partida</div>
+    <div><b>3 · Achados</b>fatores associados à nota</div>
+    <div><b>4 · Recomendações</b>o que fazer</div>
+    <div><b>5 · Limitações</b>cuidados na leitura</div>
+  </div>
+</div>
+
+<!-- 2. O problema -->
+<div class="slide roomy" data-sec="1 · Contexto" data-tit="O problema">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">1 · Contexto</div><div class="ttl">Hoje, a insatisfação só aparece no fim da jornada</div><div class="sub">O NPS é coletado depois que a compra termina. Quando a nota chega, o atraso e a reclamação já aconteceram e resta apenas remediar.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="flow">
+      <div class="st"><span class="n">1</span><h4>Pedido</h4><p>O cliente compra e recebe um prazo de entrega.</p></div>
+      <div class="ar">→</div>
+      <div class="st"><span class="n">2</span><h4>Entrega</h4><p>O pedido pode atrasar ou exigir novas tentativas.</p></div>
+      <div class="ar">→</div>
+      <div class="st"><span class="n">3</span><h4>Atendimento</h4><p>O cliente reclama e procura o suporte.</p></div>
+      <div class="ar">→</div>
+      <div class="st hl"><span class="n">4</span><h4>Pesquisa NPS</h4><p>Só aqui a empresa descobre se ele recomendaria a marca.</p></div>
+    </div>
+    <div class="g2 mt">
+      <div class="read"><h3>Por que o NPS importa</h3><ul>
+        <li><b>Recompra:</b> promotores tendem a comprar com mais frequência; detratores aparecem mais associados ao abandono da marca.</li>
+        <li><b>Boca a boca:</b> no digital, a reclamação de um detrator pode alcançar muitos possíveis clientes.</li>
+        <li><b>Participação de mercado:</b> reter a base costuma custar menos do que conquistar clientes novos.</li>
+      </ul></div>
+      <div class="read"><h3>O que o projeto propõe</h3><ul>
+        <li>Identificar <b>quais fatores da operação</b> estão mais associados à satisfação.</li>
+        <li>Usar esses sinais para <b>antecipar o risco</b> de o cliente se tornar detrator.</li>
+        <li>Permitir que a empresa <b>aja antes da pesquisa</b>, e não depois.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="ft"><span>Contexto do desafio · NPS = % de promotores − % de detratores, numa escala de −100 a +100</span><span class="pg"></span></div>
+</div>
+
+<!-- 3. Pergunta e base -->
+<div class="slide roomy" data-sec="1 · Contexto" data-tit="Pergunta orientadora">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">1 · Contexto</div><div class="ttl">A pergunta que guiou o trabalho</div><div class="sub">Analisamos 2.500 pedidos de um e-commerce, comparando o que aconteceu em cada etapa da jornada com a nota dada na pesquisa.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="quote">“Quais sinais da operação <span>estão associados à detração</span> do cliente no NPS?”</div>
+    <div class="g4 mt">
+      <div class="kc"><div class="l">Cliente</div><div class="d">Idade, região do país e tempo de relacionamento com a empresa.</div></div>
+      <div class="kc"><div class="l">Pedido</div><div class="d">Valor, quantidade de itens, desconto e número de parcelas.</div></div>
+      <div class="kc"><div class="l">Entrega</div><div class="d">Prazo prometido, dias de atraso, tentativas de entrega e frete.</div></div>
+      <div class="kc"><div class="l">Atendimento</div><div class="d">Contatos com o suporte, tempo até resolver e número de reclamações.</div></div>
+    </div>
+    <div class="g3 mt">
+      <div class="kc"><div class="l">Pedidos analisados</div><div class="v">2.500</div><div class="d">um registro por pedido e cliente</div></div>
+      <div class="kc"><div class="l">Frentes da jornada</div><div class="v">4</div><div class="d">cliente, pedido, entrega e atendimento</div></div>
+      <div class="kc"><div class="l">Régua da satisfação</div><div class="v">0 a 10</div><div class="d"><span class="pill p-b">▼ Detrator</span> abaixo de 7 · <span class="pill p-n">● Neutro</span> 7 a 8,9 · <span class="pill p-g">✔ Promotor</span> 9 ou mais</div></div>
+    </div>
+  </div>
+  <div class="ft"><span>Fonte: base do Tech Challenge, tratada no notebook 01 do repositório · sem nulos nem duplicados, nenhuma linha removida</span><span class="pg"></span></div>
+</div>
+
+<!-- 4. Ponto de partida -->
+<div class="slide" data-sec="2 · Diagnóstico" data-tit="Ponto de partida: NPS −79,96">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">2 · Diagnóstico</div><div class="ttl">O ponto de partida: NPS de −79,96</div><div class="sub">84,36% dos clientes são detratores. Nesta base, a insatisfação é a regra, não a exceção.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="g5">
+      <div class="kc"><div class="l">NPS da base</div><div class="v bad">−79,96</div><div class="d">escala de −100 a +100</div></div>
+      <div class="kc"><div class="l">Detratores</div><div class="v">84,36%</div><div class="d">2.109 clientes · nota abaixo de 7</div></div>
+      <div class="kc"><div class="l">Neutros</div><div class="v">11,24%</div><div class="d">281 clientes · nota de 7 a 8,9</div></div>
+      <div class="kc"><div class="l">Promotores</div><div class="v">4,40%</div><div class="d">110 clientes · nota 9 ou mais</div></div>
+      <div class="kc"><div class="l">Nota média</div><div class="v">4,4</div><div class="d">de 0 a 10</div></div>
+    </div>
+    <div class="g2 mt" style="grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)">
+      <div class="box"><h3>Quantos clientes deram cada nota</h3><div class="d">Notas agrupadas pela parte inteira (ex.: 6,9 entra em 6) · 9 inclui a nota 10</div><div data-chart="notas"></div>
+        <div class="leg"><span><i style="background:#2b3990"></i>Detratores</span><span><i style="background:#b9c0d6"></i>Neutros</span><span><i style="background:#f5a81c"></i>Promotores</span></div></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="box"><h3>Composição da base</h3>
+          <div class="stack"><div style="flex:84.36;background:#2b3990;color:#fff">84,36%</div><div style="flex:11.24;background:#b9c0d6"></div><div style="flex:4.40;background:#f5a81c"></div></div>
+          <div class="leg"><span><i style="background:#2b3990"></i>Detratores 84,36%</span><span><i style="background:#b9c0d6"></i>Neutros 11,24%</span><span><i style="background:#f5a81c"></i>Promotores 4,40%</span></div></div>
+        <div class="read" style="flex:1"><h3>Leitura rápida</h3><ul>
+          <li><b>84,36% dos clientes são detratores</b> e apenas 4,40% são promotores.</li>
+          <li>As notas mais frequentes ficam entre <b>3 e 5</b>: o cliente típico está insatisfeito.</li>
+          <li>A pergunta passa a ser: <b>o que diferencia os poucos satisfeitos</b> dos muitos insatisfeitos?</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="ft"><span>Fonte: base tratada (2.500 pedidos) · Detrator: nota abaixo de 7 · Neutro: 7 a 8,9 · Promotor: 9 ou mais, sem arredondar a nota</span><span class="pg"></span></div>
+</div>
+
+<!-- 5. Achado 1: atraso -->
+<div class="slide" data-sec="3 · Achados" data-tit="Achado 1: atraso na entrega">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">3 · Achados · Logística</div><div class="ttl">Achado 1: quanto maior o atraso, maior a proporção de detratores</div><div class="sub">A proporção de detratores é maior entre os pedidos atrasados e continua subindo nas faixas de atraso mais longas. Não há um único ponto de virada.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="g2" style="grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)">
+      <div class="box"><h3>% de detratores por dias de atraso</h3><div class="d">Barra cinza = pedidos entregues no prazo (referência)</div><div data-chart="atraso"></div></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="g2">
+          <div class="kc"><div class="l">Entregues no prazo</div><div class="v bad">11,08%</div><div class="d">os outros 88,92% dos pedidos chegaram com atraso</div></div>
+          <div class="kc"><div class="l">Nota média</div><div class="v">6,9 vs 1,3</div><div class="d">no prazo vs 5 dias ou mais de atraso</div></div>
+        </div>
+        <div class="box"><table>
+          <thead><tr><th class="l">Atraso</th><th>Pedidos</th><th>Nota média</th><th>Detratores</th></tr></thead>
+          <tbody>
+            <tr><td class="l">No prazo</td><td>277</td><td>6,9</td><td>51,62%</td></tr>
+            <tr><td class="l">1 dia</td><td>615</td><td>5,5</td><td>73,98%</td></tr>
+            <tr><td class="l">2 dias</td><td>646</td><td>4,6</td><td>87,93%</td></tr>
+            <tr><td class="l">3 a 4 dias</td><td>795</td><td>3,1</td><td>97,61%</td></tr>
+            <tr><td class="l">5 dias ou mais</td><td>167</td><td>1,3</td><td>100,00%</td></tr>
+          </tbody></table></div>
+      </div>
+    </div>
+    <div class="read mt"><h3>Leitura rápida</h3><ul>
+      <li>Entre os pedidos com <b>1 dia de atraso</b>, 73,98% dos clientes são detratores, contra 51,62% entre os entregues no prazo. Nas faixas de <b>3 dias ou mais</b>, a proporção fica entre 97,61% e 100,00%.</li>
+      <li>Mesmo no prazo, 51,62% são detratores: <b>o atraso não é o único fator associado à insatisfação</b>, mas é o que mostra a associação mais forte com a nota.</li>
+      <li><b>Prazo prometido, número de tentativas e valor do frete</b> mostram pouca diferença entre os grupos. A diferença aparece quando o prazo prometido não é cumprido.</li>
+    </ul></div>
+  </div>
+  <div class="ft"><span>Fonte: base tratada (2.500 pedidos) e análise de logística (notebook 02) · Atraso = dias além do prazo prometido</span><span class="pg"></span></div>
+</div>
+
+<!-- 6. Achado 2: reclamações -->
+<div class="slide" data-sec="3 · Achados" data-tit="Achado 2: reclamações">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">3 · Achados · Atendimento</div><div class="ttl">Achado 2: mais reclamações, maior proporção de detratores</div><div class="sub">Entre os pedidos com até 1 reclamação, a maioria dos clientes não é detratora. A partir de 2 reclamações, os detratores passam a ser maioria.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="g2" style="grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)">
+      <div class="box"><h3>% de detratores por número de reclamações do pedido</h3><div class="d">Barra cinza = até 1 reclamação (referência)</div><div data-chart="reclamacoes"></div></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="g2">
+          <div class="kc"><div class="l">Até 1 reclamação</div><div class="v">71,72%</div><div class="d">dos clientes não são detratores</div></div>
+          <div class="kc"><div class="l">2 ou mais reclamações</div><div class="v bad">94,20%</div><div class="d">dos pedidos: a reclamação repetida é frequente</div></div>
+        </div>
+        <div class="box"><table>
+          <thead><tr><th class="l">Reclamações</th><th>Pedidos</th><th>Nota média</th><th>Detratores</th></tr></thead>
+          <tbody>
+            <tr><td class="l">0 a 1</td><td>145</td><td>7,9</td><td>28,28%</td></tr>
+            <tr><td class="l">2</td><td>277</td><td>6,1</td><td>65,34%</td></tr>
+            <tr><td class="l">3</td><td>507</td><td>4,9</td><td>81,66%</td></tr>
+            <tr><td class="l">4 a 5</td><td>1.044</td><td>4,0</td><td>91,86%</td></tr>
+            <tr><td class="l">6 ou mais</td><td>527</td><td>2,8</td><td>97,53%</td></tr>
+          </tbody></table></div>
+      </div>
+    </div>
+    <div class="read mt"><h3>Leitura rápida</h3><ul>
+      <li>Com <b>2 reclamações</b>, 65,34% dos clientes são detratores; com <b>3 ou mais</b>, a proporção fica entre 81,66% e 97,53%.</li>
+      <li><b>A reclamação repetida é frequente nesta operação:</b> 94,20% dos pedidos têm duas ou mais. Acompanhar a reincidência é um ponto de atenção.</li>
+      <li>Ainda falta confirmar <b>em que momento</b> a reclamação é registrada: antes ou depois da pesquisa.</li>
+    </ul></div>
+  </div>
+  <div class="ft"><span>Fonte: base tratada (2.500 pedidos) e análise de atendimento e perfil (notebook 03)</span><span class="pg"></span></div>
+</div>
+
+<!-- 7. Achado 3: atendimento -->
+<div class="slide" data-sec="3 · Achados" data-tit="Achado 3: atendimento">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">3 · Achados · Atendimento</div><div class="ttl">Achado 3: mais contatos com o suporte, notas menores</div><div class="sub">A proporção de detratores é maior entre os pedidos com mais contatos, e a nota média é menor quando o problema leva mais tempo para ser resolvido.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="g3">
+      <div class="kc"><div class="l">Sem contato com o suporte</div><div class="v">nota 5,5</div><div class="d">554 pedidos · 70,76% de detratores</div></div>
+      <div class="kc"><div class="l">Com contato</div><div class="v">nota 4,1</div><div class="d">1.946 pedidos · 1,5 ponto abaixo</div></div>
+      <div class="kc"><div class="l">4 contatos ou mais</div><div class="v bad">97,73%</div><div class="d">de detratores · 176 pedidos</div></div>
+    </div>
+    <div class="g2 mt">
+      <div class="box"><h3>% de detratores por número de contatos</h3><div class="d">Barra cinza = nenhum contato (referência)</div><div data-chart="contatos"></div></div>
+      <div class="box"><h3>Nota média por tempo até resolver o problema</h3><div class="d">Escala de 0 a 10</div><div data-chart="resolucao"></div></div>
+    </div>
+    <div class="read mt"><h3>Leitura rápida</h3><ul>
+      <li>A proporção de detratores vai de <b>70,76%</b> entre os pedidos sem contato a <b>97,73%</b> entre os que tiveram 4 contatos ou mais.</li>
+      <li>Não há um prazo de corte claro: <b>a nota média é menor nas faixas de resolução mais longas</b>, de 5,3 (mesmo dia) a 3,7 (10 dias ou mais).</li>
+    </ul></div>
+  </div>
+  <div class="ft"><span>Fonte: base tratada (2.500 pedidos) e análise de atendimento e perfil (notebook 03)</span><span class="pg"></span></div>
+</div>
+
+<!-- 8. Fatores associados -->
+<div class="slide" data-sec="3 · Achados" data-tit="Fatores mais associados à nota">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">3 · Achados · Visão geral</div><div class="ttl">Quais fatores mais se associam à satisfação</div><div class="sub">Para cada fator, comparamos a proporção de detratores entre os grupos. Quanto mais longa a faixa, maior a diferença entre os grupos daquele fator.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="g2" style="grid-template-columns:minmax(0,1.75fr) minmax(0,1fr)">
+      <div class="box"><h3>Faixa da % de detratores entre os grupos de cada fator</h3><div class="d">○ grupo com menos detratores · ● grupo com mais detratores</div><div data-chart="faixas"></div></div>
+      <div class="read"><h3>Leitura rápida</h3><ul>
+        <li><b>Atraso, reclamações, contatos e tempo de resolução</b> são os fatores com maior diferença de detratores entre os grupos.</li>
+        <li><b>Perfil do cliente</b> (idade, região, tempo de casa): de 82,71% a 86,61% de detratores em todos os grupos.</li>
+        <li><b>Condições do pedido</b> (valor, desconto, parcelas): de 81,38% a 87,25%.</li>
+        <li><b>A proporção de detratores é parecida em todos os perfis.</b> As maiores diferenças aparecem no que aconteceu com o pedido, e não em quem é o cliente.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="ft"><span>Fonte: base tratada (2.500 pedidos), notebooks 02 e 03 · faixas por grupos de cada fator (ex.: atraso 0, 1, 2, 3 a 4 e 5+ dias)</span><span class="pg"></span></div>
+</div>
+
+<!-- 9. Sinais que aparecem juntos -->
+<div class="slide roomy" data-sec="3 · Achados" data-tit="Sinais que aparecem juntos">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">3 · Achados · Conexão</div><div class="ttl">Atraso, reclamação e contato aparecem juntos</div><div class="sub">Os três sinais se concentram nos mesmos pedidos, o que aproxima as agendas de logística e atendimento.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="flow">
+      <div class="st"><h4>Atraso</h4><div class="big">88,92%</div><p>dos pedidos foram entregues depois do prazo prometido.</p></div>
+      <div class="st"><h4>Reclamação</h4><div class="big">4,6 vs 3,0</div><p>reclamações por pedido: 5 dias ou mais de atraso vs no prazo.</p></div>
+      <div class="st"><h4>Contato</h4><div class="big">97,73%</div><p>de detratores com 4 contatos ou mais (70,76% sem contato).</p></div>
+      <div class="st hl"><h4>Detratores</h4><div class="big">84,36%</div><p>dos clientes da base.</p></div>
+    </div>
+    <div class="g2 mt">
+      <div class="read"><h3>O que isso significa</h3><ul>
+        <li>Os pedidos atrasados têm, em média, <b>mais reclamações registradas</b>: 4,6 com 5 dias ou mais de atraso, contra 3,0 nos entregues no prazo.</li>
+        <li>Como os sinais se concentram nos mesmos pedidos, faz sentido logística e atendimento <b>acompanharem o mesmo painel</b>.</li>
+      </ul></div>
+      <div class="read"><h3>Cuidado na leitura</h3><ul>
+        <li>Os dados mostram o que <b>aparece junto</b>; não indicam qual sinal vem primeiro nem se um provoca o outro.</li>
+        <li>O efeito de cada ação deve ser <b>medido na prática</b>, com teste em parte dos clientes.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="ft"><span>Fonte: base tratada (2.500 pedidos), notebooks 02 e 03</span><span class="pg"></span></div>
+</div>
+
+<!-- 10. Recomendações -->
+<div class="slide roomy" data-sec="4 · Recomendações" data-tit="O que recomendamos">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">4 · Recomendações</div><div class="ttl">O que recomendamos</div><div class="sub">Ações concentradas nos fatores com maior associação à nota: prazo, reclamação e atendimento.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="g3">
+      <div class="box"><div class="eyebrow">Logística</div><h3 style="font-size:26px;margin-top:8px">Agir desde o 1º dia de atraso</h3><ul>
+        <li>Acompanhar <b>todo dia</b> os pedidos fora do prazo.</li>
+        <li><b>Avisar o cliente</b> do atraso antes que ele precise perguntar.</li>
+        <li>Priorizar os pedidos que <b>acumulam dias</b> de atraso.</li>
+      </ul><p class="nota"><b>Como acompanhar:</b> % de pedidos no prazo e dias médios de atraso.</p></div>
+      <div class="box"><div class="eyebrow">Atendimento</div><h3 style="font-size:26px;margin-top:8px">Resolver rápido e de primeira</h3><ul>
+        <li>Tratar a <b>reclamação repetida</b> como alerta e escalar.</li>
+        <li>Definir um <b>prazo máximo para resolver</b> (ex.: 3 dias).</li>
+        <li>Medir quanto se <b>resolve no primeiro contato</b>.</li>
+      </ul><p class="nota"><b>Como acompanhar:</b> reclamações e contatos por pedido, dias até resolver.</p></div>
+      <div class="box"><div class="eyebrow">Gestão</div><h3 style="font-size:26px;margin-top:8px">Priorizar os fatores mais associados à nota</h3><ul>
+        <li>Logística e atendimento no <b>mesmo painel</b>.</li>
+        <li>Agir pelo <b>que aconteceu com o pedido</b>, não pelo perfil do cliente.</li>
+        <li>Reavaliar o <b>desconto</b> como ferramenta de satisfação: as faixas de desconto têm proporções de detratores parecidas.</li>
+      </ul><p class="nota"><b>Como acompanhar:</b> NPS por faixa de atraso e de reclamações, mês a mês.</p></div>
+    </div>
+    <div class="read mt"><h3>Teste antes de ampliar</h3><p>Cada ação deve começar em <b>parte dos clientes</b>, comparando a nota com um grupo que não recebeu a ação. Só assim a empresa mede o efeito real antes de investir em escala.</p></div>
+  </div>
+  <div class="ft"><span>Recomendações a partir das análises dos notebooks 02 e 03 · metas e prazos a definir com as áreas</span><span class="pg"></span></div>
+</div>
+
+<!-- 11. Limitações -->
+<div class="slide roomy" data-sec="5 · Limitações" data-tit="Cuidados na leitura">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">5 · Limitações</div><div class="ttl">Cuidados na leitura dos resultados</div><div class="sub">O que estes dados permitem afirmar e o que ainda precisa ser confirmado.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <div class="g2">
+      <div class="box"><h3>Associação não é causa</h3><ul><li>Os dados mostram o que <b>aparece junto</b>. O efeito de reduzir atrasos ou reclamações precisa ser medido em teste.</li></ul></div>
+      <div class="box"><h3>Retrato de um período</h3><ul><li>A base <b>não tem datas</b>. Os resultados descrevem estes 2.500 pedidos e não garantem o mesmo padrão em outros períodos.</li></ul></div>
+      <div class="box"><h3>Base muito insatisfeita</h3><ul><li>Com <b>84,36% de detratores</b>, as diferenças entre perfis podem ficar menores do que seriam em uma base mais equilibrada.</li></ul></div>
+      <div class="box"><h3>Falta o motivo da reclamação</h3><ul><li>Sem saber <b>do que</b> o cliente reclamou, as ações ainda são amplas. Registrar o motivo deixaria o diagnóstico mais preciso.</li></ul></div>
+    </div>
+    <div class="read mt"><h3>Ponto em aberto</h3><p>Confirmar <b>em que momento a reclamação é registrada</b>. Se for antes da pesquisa, ela serve como sinal antecipado de insatisfação; se for junto ou depois, serve apenas para diagnóstico.</p></div>
+  </div>
+  <div class="ft"><span>Limitações registradas nas análises dos notebooks 02 e 03</span><span class="pg"></span></div>
+</div>
+
+<!-- 12. Encerramento -->
+<div class="slide cover" data-sec="Encerramento" data-tit="Três mensagens para levar">
+  <div class="mark">Pós-Tech · AI Scientist</div>
+  <div class="in"><div class="ey">Em resumo</div><h1 style="font-size:56px">Três mensagens para levar</h1></div>
+  <div class="msgs">
+    <div><b>1</b><span>O atraso é o sinal mais associado à detração.</span></div>
+    <div><b>2</b><span>Reclamações e contatos com o suporte são sinais de alerta.</span></div>
+    <div><b>3</b><span>Perfil do cliente e desconto quase não diferenciam a nota.</span></div>
+  </div>
+  <div class="time" style="bottom:110px"><b>Obrigado.</b> Esses sinais podem ser acompanhados durante a jornada, antes da pesquisa.</div>
+</div>
+
+<!-- 13. Anexo -->
+<div class="slide roomy" data-sec="Anexo" data-tit="Fontes e regras">
+  <div class="bar-top"></div>
+  <div class="hd"><div><div class="eyebrow">Anexo</div><div class="ttl">Fontes e regras</div><div class="sub">Cada número da apresentação vem da base tratada e das análises do repositório do grupo.</div></div><div class="tag">Tech Challenge · Fase 1</div></div>
+  <div class="bd">
+    <table class="txt">
+      <thead><tr><th class="l" style="width:20%">Tema</th><th class="l" style="width:36%">Fonte</th><th class="l" style="width:44%">Regra</th></tr></thead>
+      <tbody>
+        <tr><td class="l"><b>Base de dados</b></td><td class="l">Base do Tech Challenge: 2.500 pedidos, 19 informações por pedido</td><td class="l">Sem nulos nem duplicados; nenhuma linha removida. Tratamento no notebook 01.</td></tr>
+        <tr><td class="l"><b>Categorias de NPS</b></td><td class="l">Nota da pesquisa, de 0 a 10, com casas decimais</td><td class="l">Detrator abaixo de 7 · Neutro de 7 a 8,9 · Promotor 9 ou mais, sem arredondar a nota. NPS = % promotores − % detratores.</td></tr>
+        <tr><td class="l"><b>Prazo e atraso</b></td><td class="l">Prazo prometido e dias de atraso de cada pedido</td><td class="l">Tempo real de entrega = prazo prometido + dias de atraso, conforme orientação do professor (05/10).</td></tr>
+        <tr><td class="l"><b>Logística</b></td><td class="l">Notebook 02 e síntese em reports/analise_logistica.md</td><td class="l">% de detratores e nota média por faixa de atraso, prazo, tentativas e frete.</td></tr>
+        <tr><td class="l"><b>Atendimento e perfil</b></td><td class="l">Notebook 03</td><td class="l">% de detratores e nota média por contatos, tempo de resolução, reclamações, perfil do cliente e do pedido.</td></tr>
+        <tr><td class="l"><b>Leitura dos resultados</b></td><td class="l">Todas as análises</td><td class="l">Os números descrevem associações entre os fatores e a nota; não medem causa e efeito.</td></tr>
+        <tr><td class="l"><b>Repositório</b></td><td class="l">github.com/GiullianoAlvs/tech-challenge-fase1-nps</td><td class="l">Código, base tratada, figuras e instruções para reproduzir as análises.</td></tr>
+      </tbody></table>
+  </div>
+  <div class="ft"><span>Tech Challenge · Fase 1 · NPS Preditivo</span><span class="pg"></span></div>
+</div>
+
+</div>
+<div id="nav">
+  <button id="bPrev" title="Anterior (←)">◀</button><span id="pg"></span><button id="bNext" title="Próximo (→)">▶</button>
+  <select id="idx" title="Ir para..."></select>
+  <span class="sp"></span><span class="hint">← → navegar · F tela cheia · Ctrl+P salvar PDF</span>
+  <button id="bFull">⛶ Tela cheia</button>
+</div>
+<script>
+/* ---------- dados dos gráficos (base tratada, 2.500 pedidos) ---------- */
+const DADOS = {
+  notas: [
+    {lab:'0', v:272, cor:'#2b3990'}, {lab:'1', v:191, cor:'#2b3990'}, {lab:'2', v:286, cor:'#2b3990'}, {lab:'3', v:339, cor:'#2b3990'},
+    {lab:'4', v:378, cor:'#2b3990'}, {lab:'5', v:351, cor:'#2b3990'}, {lab:'6', v:292, cor:'#2b3990'},
+    {lab:'7', v:173, cor:'#b9c0d6'}, {lab:'8', v:108, cor:'#b9c0d6'}, {lab:'9–10', v:110, cor:'#f5a81c'}
+  ],
+  atraso: [
+    {lab:'No prazo', sub:'277 pedidos', v:51.62, ref:1}, {lab:'1 dia', sub:'615 pedidos', v:73.98}, {lab:'2 dias', sub:'646 pedidos', v:87.93},
+    {lab:'3 a 4 dias', sub:'795 pedidos', v:97.61}, {lab:'5 dias ou +', sub:'167 pedidos', v:100.00}
+  ],
+  reclamacoes: [
+    {lab:'0 a 1', sub:'145 pedidos', v:28.28, ref:1}, {lab:'2', sub:'277 pedidos', v:65.34}, {lab:'3', sub:'507 pedidos', v:81.66},
+    {lab:'4 a 5', sub:'1.044 pedidos', v:91.86}, {lab:'6 ou mais', sub:'527 pedidos', v:97.53}
+  ],
+  contatos: [
+    {lab:'Nenhum', v:70.76, ref:1}, {lab:'1 contato', v:83.95}, {lab:'2 contatos', v:88.59}, {lab:'3 contatos', v:93.31}, {lab:'4 ou mais', v:97.73}
+  ],
+  resolucao: [
+    {lab:'Mesmo dia', v:5.3}, {lab:'1 a 3 dias', v:4.8}, {lab:'4 a 6 dias', v:4.4}, {lab:'7 a 9 dias', v:4.1}, {lab:'10 dias ou +', v:3.7}
+  ],
+  faixas: [
+    {grupo:'Grande diferença entre os grupos'},
+    {lab:'Atraso na entrega', a:51.62, b:100.00, forte:1},
+    {lab:'Número de reclamações', a:28.28, b:97.53, forte:1},
+    {lab:'Contatos com o suporte', a:70.76, b:97.73, forte:1},
+    {lab:'Tempo até resolver', a:75.00, b:91.48, forte:1},
+    {grupo:'Pouca diferença entre os grupos'},
+    {lab:'Perfil do cliente', sub:'idade, região, tempo de casa', a:82.71, b:86.61},
+    {lab:'Condições do pedido', sub:'valor, desconto, parcelas', a:81.38, b:87.25},
+    {lab:'Outros fatores da entrega', sub:'prazo prometido, tentativas, frete', a:82.10, b:86.75}
+  ]
+};
+/* ---------- formatação: porcentagens com 2 casas, notas com 1 ---------- */
+const nf0=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}), nf1=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}), nf2=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct=v=>nf2.format(v)+'%', dec=v=>nf1.format(v);
+/* ---------- gráfico de barras verticais: valor em cima, rótulo e volume embaixo ---------- */
+function vbars(d,{W=800,H=380,max=100,fmt=pct,lab=16,val=20}={}){
+  const ml=10,mr=10,mt=34,mb=d.some(x=>x.sub)?58:34, slot=(W-ml-mr)/d.length, bw=Math.min(110,slot*0.6), Y=v=>mt+(H-mt-mb)*(1-v/max);
+  let g=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img">`;
+  g+=`<line x1="${ml}" x2="${W-mr}" y1="${H-mb}" y2="${H-mb}" stroke="#c9cedb"/>`;
+  d.forEach((x,i)=>{ const cx=ml+slot*(i+.5), y=Y(x.v), c=x.cor||(x.ref?'#b9c0d6':'#2b3990');
+    g+=`<g><title>${x.lab}: ${fmt(x.v)}${x.sub?' · '+x.sub:''}</title><rect x="${cx-bw/2}" y="${y}" width="${bw}" height="${H-mb-y}" rx="4" fill="${c}"/>`;
+    g+=`<text x="${cx}" y="${y-10}" text-anchor="middle" font-size="${val}" font-weight="700" fill="#1b1f2a">${fmt(x.v)}</text>`;
+    g+=`<text x="${cx}" y="${H-mb+22}" text-anchor="middle" font-size="${lab}" font-weight="700" fill="#1b1f2a">${x.lab}</text>`;
+    if(x.sub) g+=`<text x="${cx}" y="${H-mb+44}" text-anchor="middle" font-size="13" fill="#4a5163">${x.sub}</text>`;
+    g+='</g>'; });
+  return g+'</svg>';
+}
+/* ---------- barras horizontais: rótulo à esquerda, valor à direita ---------- */
+function hbars(d,{W=690,max=100,fmt=pct,lw=140,vw=92}={}){
+  const rh=46, H=d.length*rh+6, x0=lw, tw=W-lw-vw-12;
+  let g=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img">`;
+  d.forEach((x,i)=>{ const y=i*rh+6, c=x.ref?'#b9c0d6':'#2b3990';
+    g+=`<g><title>${x.lab}: ${fmt(x.v)}</title><text x="0" y="${y+22}" font-size="16" fill="#1b1f2a">${x.lab}</text>`;
+    g+=`<rect x="${x0}" y="${y+6}" width="${tw}" height="24" rx="4" fill="#eef0f5"/><rect x="${x0}" y="${y+6}" width="${tw*x.v/max}" height="24" rx="4" fill="${c}"/>`;
+    g+=`<text x="${W}" y="${y+24}" text-anchor="end" font-size="18" font-weight="700" fill="#1b1f2a">${fmt(x.v)}</text></g>`; });
+  return g+'</svg>';
+}
+/* ---------- faixas (menor e maior % de detratores entre os grupos de cada fator) ---------- */
+function faixas(d,{W=880,lw=260,vw=168}={}){
+  const top=30, rh=56, gh=34, H=top+d.reduce((s,x)=>s+(x.grupo?gh:rh),0)+6, x0=lw, x1=W-vw-14, X=v=>x0+(x1-x0)*v/100;
+  let g=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img">`;
+  [0,25,50,75,100].forEach(t=>{ g+=`<line x1="${X(t)}" x2="${X(t)}" y1="${top-4}" y2="${H-4}" stroke="#eef0f5" stroke-width="2"/><text x="${X(t)}" y="${top-12}" text-anchor="middle" font-size="13" fill="#8a90a0">${t}%</text>`; });
+  let y=top;
+  d.forEach(x=>{
+    if(x.grupo){ g+=`<text x="0" y="${y+24}" font-size="13" font-weight="700" fill="#b07400" letter-spacing="1">${x.grupo.toUpperCase()}</text>`; y+=gh; return; }
+    const cy=y+rh/2, c=x.forte?'#2b3990':'#b9c0d6';
+    g+=`<g><title>${x.lab}: de ${pct(x.a)} a ${pct(x.b)} de detratores</title>`;
+    g+=x.sub?`<text x="0" y="${cy-3}" font-size="17" font-weight="${x.forte?700:400}" fill="#1b1f2a">${x.lab}</text><text x="0" y="${cy+16}" font-size="13" fill="#4a5163">${x.sub}</text>`
+            :`<text x="0" y="${cy+6}" font-size="17" font-weight="${x.forte?700:400}" fill="#1b1f2a">${x.lab}</text>`;
+    g+=`<line x1="${X(x.a)}" x2="${X(x.b)}" y1="${cy}" y2="${cy}" stroke="${c}" stroke-width="12" stroke-linecap="round"/>`;
+    g+=`<circle cx="${X(x.a)}" cy="${cy}" r="9" fill="#fff" stroke="${c}" stroke-width="3"/><circle cx="${X(x.b)}" cy="${cy}" r="9" fill="${c}" stroke="#fff" stroke-width="2"/>`;
+    g+=`<text x="${W}" y="${cy+6}" text-anchor="end" font-size="16" font-weight="700" fill="${x.forte?'#1b1f2a':'#4a5163'}">${pct(x.a)} a ${pct(x.b)}</text></g>`;
+    y+=rh; });
+  return g+'</svg>';
+}
+const GRAF = {
+  notas: ()=>vbars(DADOS.notas,{W:860,H:330,max:400,fmt:v=>nf0.format(v),val:16}),
+  atraso: ()=>vbars(DADOS.atraso,{W:800,H:400}),
+  reclamacoes: ()=>vbars(DADOS.reclamacoes,{W:800,H:400}),
+  contatos: ()=>hbars(DADOS.contatos),
+  resolucao: ()=>hbars(DADOS.resolucao,{max:10,fmt:dec}),
+  faixas: ()=>faixas(DADOS.faixas)
+};
+document.querySelectorAll('[data-chart]').forEach(el=>{ el.innerHTML=GRAF[el.dataset.chart](); });
+/* ---------- navegação ---------- */
+const vp=document.getElementById('viewport'), idx=document.getElementById('idx');
+const els=[...document.querySelectorAll('.slide')]; let cur=0;
+els.forEach((s,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=`${i+1}. ${s.dataset.sec} — ${s.dataset.tit}`; idx.appendChild(o);
+  const p=s.querySelector('.ft .pg'); if(p) p.textContent=`${i+1} / ${els.length}`; });
+function fit(){ const w=vp.clientWidth, h=vp.clientHeight, s=Math.min(w/1600,h/900)*0.98; els.forEach(e=>e.style.transform=`scale(${s})`); }
+function go(i){ cur=Math.max(0,Math.min(els.length-1,i)); els.forEach((e,j)=>e.classList.toggle('on',j===cur)); document.getElementById('pg').textContent=`${cur+1} / ${els.length}`; idx.value=cur; try{ history.replaceState(null,'','#'+(cur+1)); }catch(e){} }
+document.getElementById('bPrev').onclick=()=>go(cur-1); document.getElementById('bNext').onclick=()=>go(cur+1);
+idx.onchange=()=>go(+idx.value);
+document.getElementById('bFull').onclick=()=>{ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen(); };
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ') go(cur+1); else if(e.key==='ArrowLeft'||e.key==='PageUp') go(cur-1); else if(e.key==='f'||e.key==='F') document.getElementById('bFull').click(); else if(e.key==='Home') go(0); else if(e.key==='End') go(els.length-1); });
+window.addEventListener('resize',fit); fit(); go((+location.hash.slice(1)||1)-1);
+</script>
+</body>
+</html>

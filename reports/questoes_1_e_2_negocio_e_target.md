@@ -7,7 +7,7 @@ Equipe:
 - Gerferson André Silva Costa
 - Giulliano Alves Souza Machado
 - Matheus da Silva Lima
-- Yan Marcel Ramos 
+- Yan Marcel Ramos
 
 ---
 
